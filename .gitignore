@@ -1,0 +1,2 @@
+*.pem
+.cluster.conf*
