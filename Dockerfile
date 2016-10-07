@@ -3,8 +3,8 @@ FROM centos:latest
 MAINTAINER Tsuyoshi Miyake
 
 ENV JDK_URL http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.tar.gz
-ENV JDK_VER=jdk1.8.0_102
-ENV CONF_DIR=/cloudera-boot
+ENV JDK_VER jdk1.8.0_102
+ENV CONF_DIR /cloudera-boot
 
 RUN yum -y install wget
 WORKDIR /etc/yum.repos.d
