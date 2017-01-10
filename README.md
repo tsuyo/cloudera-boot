@@ -1,5 +1,5 @@
 # cloudera-boot
-Dockefile for [Cloudera Director Client][1]. This repo has a sample cluster.conf just for your reference. Refer to [Provisioning a Cluster on AWS][2] for the full syntax.
+Dockerfile for [Cloudera Director Client][1]. This repo has a sample cluster.conf just for your reference. Refer to [Provisioning a Cluster on AWS][2] for the full syntax.
 
 ## Usage
 Bootstrap a CDH cluster on AWS
@@ -19,7 +19,7 @@ docker run --rm -ti -v ${PWD}:/cloudera-boot -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_
 ```
 $ git clone https://github.com/tsuyo/cloudera-boot
 $ cd cloudera-boot
-$ docker build -t kirasoa/cloudera-boot:latest .
+$ docker build --build-arg CD_VER=2.2.0 -t kirasoa/cloudera-boot:2.2.0 -t kirasoa/cloudera-boot:latest .
 ```
 
 [1]: http://www.cloudera.com/documentation/director/latest/topics/director_client.html
