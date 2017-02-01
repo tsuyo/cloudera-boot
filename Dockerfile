@@ -29,7 +29,12 @@ RUN echo 'name=Cloudera Director' >> cloudera-director.repo
 RUN echo "baseurl=http://archive.cloudera.com/director/redhat/7/x86_64/director/${CD_VER}/" >> cloudera-director.repo
 RUN echo 'gpgkey = http://archive.cloudera.com/director/redhat/7/x86_64/director/RPM-GPG-KEY-cloudera' >> cloudera-director.repo
 RUN echo 'gpgcheck = 1' >> cloudera-director.repo
+RUN yum -y install cloudera-director-plugins
+RUN yum -y install cloudera-director-server
 RUN yum -y install cloudera-director-client
 
+ADD bin/bootstrap-remote.sh /usr/bin
+RUN chmod +x /usr/bin/bootstrap-remote.sh
+
 WORKDIR ${CONF_DIR}
-CMD [ "cloudera-director", "bootstrap", "cluster.conf" ]
+CMD [ "/usr/bin/bootstrap-remote.sh" ]
