@@ -1,0 +1,27 @@
+version: '2'
+services:
+  cloudera-director-server:
+    build:
+      context: server
+      args:
+        CD_VER: 2.3.0
+    image: kirasoa/cloudera-director-server:2.3.0
+    ports:
+      - "7189:7189"
+  cloudera-director-client:
+    # stdin_open: true
+    # tty: true
+    depends_on:
+      - cloudera-director-server
+    command: ["sh", "-c", "cd-wait-for-server && cd-bootstrap-remote"]
+    build:
+      context: client
+      args:
+        CD_VER: 2.3.0
+    image: kirasoa/cloudera-director-client:2.3.0
+    volumes:
+      - ${PWD}:/cloudera-boot
+    environment:
+      SERVER_HOST_N_PORT: cloudera-director-server:7189
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}

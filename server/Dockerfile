@@ -6,9 +6,9 @@ ARG CD_VER=2
 ENV CD_VER ${CD_VER}
 ENV JDK_URL http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.tar.gz
 ENV JDK_VER jdk1.8.0_102
-ENV CONF_DIR /cloudera-boot
 
 RUN yum -y install wget
+RUN yum -y install iproute
 
 WORKDIR /tmp
 RUN wget -q --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" ${JDK_URL}
@@ -33,8 +33,5 @@ RUN yum -y install cloudera-director-plugins
 RUN yum -y install cloudera-director-server
 RUN yum -y install cloudera-director-client
 
-ADD bin/bootstrap-remote.sh /usr/bin
-RUN chmod +x /usr/bin/bootstrap-remote.sh
-
-WORKDIR ${CONF_DIR}
-CMD [ "/usr/bin/bootstrap-remote.sh" ]
+WORKDIR /
+CMD ["sh", "-c", "service cloudera-director-server start && tail -f /var/log/cloudera-director-server/application.log"]
