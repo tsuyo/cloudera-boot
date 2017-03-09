@@ -33,6 +33,10 @@ $ docker-compose run cloudera-director-client cd-terminate-remote
 or even execute any [Cloudera Director CLI][3] command instead of cd-terminate-remote like this:
 ```
 $ docker-compose run cloudera-director-client cloudera-director validate cluster.conf
+# Deploy cluster with Cloudera Director server
+$ docker-compose run cloudera-director-client cloudera-director bootstrap-remote cluster.conf  --lp.remote.username=admin --lp.remote.password=admin --lp.remote.hostAndPort=cloudera-director-server:7189
+# Terminate cluster with Cloudera Director server
+$ docker-compose run cloudera-director-client cloudera-director terminate-remote cluster.conf  --lp.remote.username=admin --lp.remote.password=admin --lp.remote.hostAndPort=cloudera-director-server:7189
 ```
 If you feel you don't need the server anymore, shutdown it completely as follows:
 ```
