@@ -4,8 +4,8 @@ services:
     build:
       context: server
       args:
-        CD_VER: 2.4.0
-    image: kirasoa/cloudera-director-server:2.4.0
+        CD_VER: 2
+    image: kirasoa/cloudera-director-server:2
     ports:
       - "7189:7189"
   cloudera-director-client:
@@ -17,8 +17,8 @@ services:
     build:
       context: client
       args:
-        CD_VER: 2.4.0
-    image: kirasoa/cloudera-director-client:2.4.0
+        CD_VER: 2
+    image: kirasoa/cloudera-director-client:2
     volumes:
       - ${PWD}:/cloudera-boot
     environment:
