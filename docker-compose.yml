@@ -13,7 +13,7 @@ services:
     # tty: true
     depends_on:
       - server
-    command: ["sh", "-c", "cd-wait-for-server && cd-bootstrap-remote"]
+    command: ["sh", "-c", "wait-for-server && cd-bootstrap-remote"]
     build:
       context: .
       args:
@@ -26,10 +26,11 @@ services:
       SERVER_HOST_N_PORT: server:7189
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
   shell:
     # stdin_open: true
     # tty: true
-    command: ["sh", "-c", "cd-portforward && /bin/bash"]
+    command: ["sh", "-c", "portforward && /bin/bash"]
     build:
       context: .
       args:
