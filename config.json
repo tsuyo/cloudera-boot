@@ -1,0 +1,5 @@
+{
+    "vpc_id": "vpc-0f62636a",
+    "subnet_id": "subnet-ce444a97",
+    "security_group_id": "sg-65014801"
+}

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+(cd /opt/director-scripts/faster-bootstrap && echo PACKER_VARS="-var-file=/cloudera-boot/config.json" bash build-ami.sh $*)

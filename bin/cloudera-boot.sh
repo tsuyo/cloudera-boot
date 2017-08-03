@@ -60,3 +60,6 @@ cb-shutdown() {
   docker-compose down
 }
 
+cb-status() {
+  docker-compose ps
+}

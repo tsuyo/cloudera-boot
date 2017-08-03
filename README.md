@@ -90,6 +90,18 @@ $ cb-exec-remote <REMOTE_USER> <REMOTE_HOST> cd-bootstrap-remote
 ```
 (NOTE) cd-bootstrap-remote/cd-terminate-remote are aliases for "cloudera-director bootstrap-remote" and "cloudera-director terminate-remote" commands respectively.
 
+## Appendix
+### How to build your own custom AMI for faster bootstrap
+```
+$ vi config.json
+{
+    "vpc_id": "vpc-xxxxxxxx",
+    "subnet_id": "subnet-xxxxxxxx",
+    "security_group_id": "sg-xxxxxxxx"
+}
+$ build-ami -p -P -j 1.8 -a "ami-5de0433c hvm ec2-user /dev/sda1" ap-northeast-1 rhel73 "rhel73-c5.12-ga" http://archive.cloudera.com/cdh5/parcels/5.12/ http://archive.cloudera.com/cm5/redhat/7/x86_64/cm/5.12/
+```
+
 [1]: http://www.cloudera.com/documentation/director/latest/topics/director_intro.html
 [2]: http://www.cloudera.com/documentation/director/latest/topics/director_deployment_modify_config_file.html
 [3]: https://www.docker.com/get-docker

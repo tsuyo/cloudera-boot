@@ -37,6 +37,16 @@ RUN \
   mv packer /usr/local/bin
 
 RUN yum -y install openssh-clients
+RUN yum -y install git
+
+RUN mkdir director-scripts
+WORKDIR /opt/director-scripts
+RUN \
+  git init && \
+  git remote add -f origin https://github.com/cloudera/director-scripts.git && \
+  git config core.sparseCheckout true && \
+  echo "faster-bootstrap" >> .git/info/sparse-checkout && \
+  git pull origin master
 
 ENV PATH $PATH:/opt/cloudera-director-client/bin
 ADD bin /usr/bin
