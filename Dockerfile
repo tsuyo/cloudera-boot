@@ -6,6 +6,7 @@ ARG CD_VER=2
 ENV CD_VER ${CD_VER}
 ENV JDK_URL http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz
 ENV JDK_VER jdk1.8.0_131
+ENV PACKER_URL https://releases.hashicorp.com/packer/1.0.3/packer_1.0.3_linux_amd64.zip
 
 RUN mkdir -p /usr/java
 WORKDIR /usr/java
@@ -27,6 +28,13 @@ RUN \
   curl -sOL http://archive.cloudera.com/director/director/${CD_VER}/cloudera-director-client-latest.tar.gz && \
   tar zxf cloudera-director-client-*.tar.gz && rm cloudera-director-client-*.tar.gz && \
   mv cloudera-director-[0-9]* cloudera-director-client
+
+RUN yum -y install unzip
+
+RUN \
+  curl -sOL ${PACKER_URL} && \
+  unzip packer*.zip && rm packer*.zip && \
+  mv packer /usr/local/bin
 
 RUN yum -y install openssh-clients
 
