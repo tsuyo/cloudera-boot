@@ -30,7 +30,7 @@ services:
   shell:
     # stdin_open: true
     # tty: true
-    command: ["sh", "-c", "portforward.sh && /bin/bash"]
+    command: ["sh", "-c", "bin/portforward.sh && /bin/bash"]
     build:
       context: .
       args:
