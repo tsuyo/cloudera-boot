@@ -39,7 +39,7 @@ function Cb-Exec-Remote($remote_user, $remote_host) {
 }
 
 function Cb-Terminate() {
-  docker-compose run -e SERVER_HOST_N_PORT=server:7189 shell cd-terminate-remote
+  docker-compose run -e SERVER_HOST_N_PORT=server:7189 shell bin/cd-terminate-remote.sh
 }
 
 function Cb-Shutdown() {
