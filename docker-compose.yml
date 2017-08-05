@@ -13,7 +13,7 @@ services:
     # tty: true
     depends_on:
       - server
-    command: ["sh", "-c", "./bin/wait-for-server.sh && cd-bootstrap-remote.sh"]
+    command: ["sh", "-c", "./bin/wait-for-server.sh && ./bin/cd-bootstrap-remote.sh"]
     build:
       context: .
       args:
