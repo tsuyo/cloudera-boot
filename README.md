@@ -16,6 +16,13 @@ $ export AWS_SECRET_ACCESS_KEY=xxxxxx
 $ export SSH_PRIVATE_KEY=<your_SSH_PRIVATE_KEY_FILENAME> # pem file name
 ```
 
+If you are PowerShell user, you can use similar aliases with activating as follows:
+
+```
+. bin\cloudera-boot.ps1
+```
+
+
 ## Usage 1: Bootstrap a cluster (local mode)
 bootstrap/terminate a cluster from cluster.conf. The commands below launch Cloudera Director server, followed by command to create a cluster via the server.
 ```
