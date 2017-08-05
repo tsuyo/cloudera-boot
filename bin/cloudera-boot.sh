@@ -49,11 +49,11 @@ cb-exec-remote() {
   REMOTE_HOST=$2
   shift; shift
 
-  docker-compose run -e SERVER_HOST_N_PORT=localhost:7189 -e REMOTE_USER=$REMOTE_USER -e REMOTE_HOST=$REMOTE_HOST shell sh -c "portforward && $*"
+  docker-compose run -e SERVER_HOST_N_PORT=localhost:7189 -e REMOTE_USER=$REMOTE_USER -e REMOTE_HOST=$REMOTE_HOST shell sh -c "portforward.sh && $*"
 }
 
 cb-terminate() {
-  docker-compose run -e SERVER_HOST_N_PORT=server:7189 shell cd-terminate-remote
+  docker-compose run -e SERVER_HOST_N_PORT=server:7189 shell cd-terminate-remote.sh
 }
 
 cb-shutdown() {

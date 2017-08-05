@@ -13,14 +13,14 @@ services:
     # tty: true
     depends_on:
       - server
-    command: ["sh", "-c", "wait-for-server && cd-bootstrap-remote"]
+    command: ["sh", "-c", "./bin/wait-for-server.sh && cd-bootstrap-remote.sh"]
     build:
       context: .
       args:
         CD_VER: 2
     image: kirasoa/cloudera-boot:2
     volumes:
-      - ${PWD}:/cloudera-boot
+      - ./:/cloudera-boot
     working_dir: /cloudera-boot
     environment:
       SERVER_HOST_N_PORT: server:7189
@@ -30,14 +30,14 @@ services:
   shell:
     # stdin_open: true
     # tty: true
-    command: ["sh", "-c", "portforward && /bin/bash"]
+    command: ["sh", "-c", "portforward.sh && /bin/bash"]
     build:
       context: .
       args:
         CD_VER: 2
     image: kirasoa/cloudera-boot:2
     volumes:
-      - ${PWD}:/cloudera-boot
+      - ./:/cloudera-boot
     working_dir: /cloudera-boot
     environment:
       SERVER_HOST_N_PORT: localhost:7189
