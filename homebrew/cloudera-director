@@ -1,0 +1,8 @@
+#!/bin/bash
+
+docker run --network cloudera-director-network \
+  --rm -it -v ${PWD}:/workspace \
+  -e AWS_ACCESS_KEY_ID \
+  -e AWS_SECRET_ACCESS_KEY \
+  -e SSH_PRIVATE_KEY \
+  kirasoa/cloudera-director:latest cloudera-director "$@"

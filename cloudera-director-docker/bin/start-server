@@ -1,0 +1,4 @@
+#!/bin/bash
+
+server_bin_dir=$(dirname `type -p cloudera-director-server`)
+(cd ${server_bin_dir} && ./start && tail -f ../logs/application.log)

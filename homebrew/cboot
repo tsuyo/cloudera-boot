@@ -1,0 +1,117 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+import os
+from collections import OrderedDict
+
+
+class ClouderaBoot(object):
+    SERVER_COMMANDS = OrderedDict((
+        ('server', 'operations for server'),
+        ('s', 'alias for "server"'),
+        ('se', 'alias for "server"')
+    ))
+
+    SERVER_ACTIONS = OrderedDict((
+        ('start',   'start cloudera director server'),
+        ('stop',    'stop cloudera director server'),
+        ('restart', 'restart cloudera director server'),
+        ('status',  'check server status'),
+        ('log',     'view server log')
+    ))
+
+    CLIENT_COMMANDS = OrderedDict((
+        ('client', 'operations for client'),
+        ('c',      'alias for "client"'),
+        ('cl',     'alias for "client"')
+    ))
+
+    CLIENT_ACTIONS = OrderedDict((
+        ('shell',     'begin an interactive shell'),
+        ('bootstrap', 'bootstrap cluster (= "cloudera-director bootstrap-remote")'),
+        ('validate',  'validate conf (= "cloudera-director validate-remote")'),
+        ('terminate', 'terminate cluster (= "cloudera-director terminate-remote")')
+    ))
+
+    CLIENT_BASE_COMMAND = '''docker run --network cloudera-director-network \
+--rm -it -v ${PWD}:/workspace \
+-e AWS_ACCESS_KEY_ID \
+-e AWS_SECRET_ACCESS_KEY \
+-e SSH_PRIVATE_KEY \
+kirasoa/cloudera-director:latest'''
+
+    def __init__(self):
+        # create the top-level parser
+        parser = argparse.ArgumentParser(
+            prog='cboot',
+            description='Cloudera Boot CLI')
+        subparsers = parser.add_subparsers(
+            title='commands',
+            help='')
+
+        # create the parser for the "server" command
+        for c, h in ClouderaBoot.SERVER_COMMANDS.items():
+            parser_server = subparsers.add_parser(c, help=h)
+            self.parser_setup(parser_server, "server", ClouderaBoot.SERVER_ACTIONS)
+
+        # create the parser for the "client" command
+        for c, h in ClouderaBoot.CLIENT_COMMANDS.items():
+            parser_client = subparsers.add_parser(c, help=h)
+            self.parser_setup(parser_client, "client", ClouderaBoot.CLIENT_ACTIONS)
+
+        args = parser.parse_args()
+        args.func(args)
+
+    def parser_setup(self, parser, command, actions):
+        subparsers = parser.add_subparsers(
+            title='actions',
+            help='')
+        for a, h in actions.items():
+            parser_action = subparsers.add_parser(a, help=h)
+            parser_action.add_argument('args', nargs=argparse.REMAINDER, help="arguments")
+            parser_action.set_defaults(func=getattr(self, command + '_' + a))
+
+
+    def server_start(self, args):
+        print('starting server')
+        os.system('''docker network create cloudera-director-network > /dev/null 2>&1
+''')
+        os.system('''docker run --name cloudera-director-server --network cloudera-director-network \
+  --rm -d -p 7189:7189 kirasoa/cloudera-director:latest start-server
+''')
+        print('see the log with "cboot sever log"')
+        print('check status with "cboot server status" (200 means server up & running)')
+
+    def server_stop(self, args):
+        print('stopping server')
+        os.system('''docker stop cloudera-director-server
+''')
+
+    def server_restart(self, args):
+        self.server_stop(args)
+        self.server_start(args)
+
+    def server_status(self, args):
+        os.system('''docker exec -it cloudera-director-server status
+''')
+
+    def server_log(self, args):
+        os.system('''docker logs -f cloudera-director-server
+''')
+
+    def client_shell(self, args):
+        os.system(ClouderaBoot.CLIENT_BASE_COMMAND + " bash")
+
+    def client_bootstrap(self, args):
+        os.system(ClouderaBoot.CLIENT_BASE_COMMAND + " cloudera-director bootstrap-remote " + " ".join(args.args))
+
+    def client_validate(self, args):
+        os.system(ClouderaBoot.CLIENT_BASE_COMMAND + " cloudera-director validate-remote " + " ".join(args.args))
+
+    def client_terminate(self, args):
+        os.system(ClouderaBoot.CLIENT_BASE_COMMAND + " cloudera-director terminate-remote " + " ".join(args.args))
+
+
+if __name__ == '__main__':
+    ClouderaBoot()

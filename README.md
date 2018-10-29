@@ -1,107 +1,142 @@
 # cloudera-boot
-This repo includes [Cloudera Director][1] utilities. The main component is Dockerfile for Cloudera Director server & client. You can try full Cloudera Director features on your own machine (without any additional instance just for Cloudera Director server on a cloud provider like AWS - great cost savings!). Or you can deploy this on one of several Container-as-a-service providers (e.g. AWS ECS). A sample cluster.conf file is included just for your reference. Refer to [Provisioning a Cluster on AWS][2] for the full syntax of the configuration file.
+Cloudera Boot is essentially a collection of utilities for [Cloudera Altus Director][1]. With cloudera-boot CLI (cboot), you can achieve the following tasks like
+- start & stop Cloudera Altus Director server on your own machine (e.g. Mac)
+- check status & view logs for the server
+- bootstrap & terminate CDH and Cloudera Enterprise Data Hub in the cloud
 
-## Download & Preparation
-You need [Docker Community Edition][3] to use commands in this repository. The last command here builds docker image and may take some time depending on your environment.
-```
-$ git clone https://github.com/tsuyo/cloudera-boot
-$ cd cloudera-boot
-$ . bin/cloudera-boot.sh # load several functions/aliases
-$ cb-build # may take a while
-```
-And the following environment variables are required in advance.
-```
-$ export AWS_ACCESS_KEY_ID=xxxxxx
-$ export AWS_SECRET_ACCESS_KEY=xxxxxx
-$ export SSH_PRIVATE_KEY=<your_SSH_PRIVATE_KEY_FILENAME> # pem file name
-```
+You can try full Cloudera Altus Director features on your own machine (without any additional instance in a public cloud provider like AWS) or, of course install this tool on one of the public cloud providers if you like.
 
-## Usage 1: Bootstrap a cluster (local mode)
-bootstrap/terminate a cluster from cluster.conf. The commands below launch Cloudera Director server, followed by command to create a cluster via the server.
+A sample cluster.conf file is included in this repo just for your reference. Refer to [Provisioning a Cluster on AWS][2] for the full syntax of the configuration file.
+
+## Installation
+### Mac
+You only need [Docker Community Edition][3] as a prerequisite (Java isn't even required). The easiest way to install cloudera-boot on Mac is by using [Homebrew][4] as follows
+
 ```
-$ vi cluster.conf # edit your own cluster.conf
-$ cb-bootstrap
-$ cb-logs       # show both server & client logs (optional)
-$ cb-log-server # show server log (optional)
-$ cb-log-client # show client log (optional)
+$ brew tap tsuyo/tap
+$ brew install cloudera-boot
 ```
-You can access Cloudera Director web console via http://localhost:7189 as usual. After trying some great jobs against the cluster, you can terminate it with the following command:
+To check the installation, you can type 'cboot -h or --help' and should see a similar output as follows
 ```
-$ cb-terminate
-```
-or even execute any Cloudera Director CLI command once you enter shell mode:
-```
-$ cb-shell # enter shell mode
-[root@xxxxxxxxxxxx cloudera-boot]# cloudera-director validate cluster.conf
-[root@xxxxxxxxxxxx cloudera-boot]# cloudera-director bootstrap-remote cluster.conf --lp.remote.username=admin --lp.remote.password=admin --lp.remote.hostAndPort=server:7189
-[root@xxxxxxxxxxxx cloudera-boot]# cloudera-director terminate-remote cluster.conf --lp.remote.username=admin --lp.remote.password=admin --lp.remote.hostAndPort=server:7189
-```
-If you feel you don't need the server anymore, shutdown it completely as follows:
-```
-$ cb-shutdown
+$ cboot -h
+usage: cboot [-h] {server,s,se,client,c,cl} ...
+
+Cloudera Boot CLI
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+commands:
+  {server,s,se,client,c,cl}
+    server              operations for server
+    s                   alias for "server"
+    se                  alias for "server"
+    client              operations for client
+    c                   alias for "client"
+    cl                  alias for "client"
 ```
 
-## Usage 2: Launch Cloudera Director server (local mode)
-If you need just Cloudera Director server's functions, it's as easy as:
+### Other platforms (Windows, Linux)
+Though not tested, you should use cloudera-boot if you have python installed on your platform. You can directly download [cloudera-boot archive file][5], extract it and install 'cboot' and 'cloudera-director' command within your command path.
+
+## Configure ENV variables (optional)
+As you can see [Cloudera AWS Reference configuration][6], it's a good idea to externalize confidential information as ENV variables. These variables in configuration are replaced with actual values when bootstrapping a cluster. For example, in AWS, the following environment variables are typically considered as confidential ones.
 ```
-$ cb-server
-$ cb-log-server # show server log (optional)
-```
-Now you can access the server web console via http://localhost:7189. After playing around on the web console, you can terminate the server with the following command:
-```
-$ cb-shutdown
+$ export AWS_ACCESS_KEY_ID=xxxxxx     # AWS Access Key
+$ export AWS_SECRET_ACCESS_KEY=yyyyyy # AWS Serect Access Key
+$ export SSH_PRIVATE_KEY=zzzzzz.pem   # SSH pem file path
 ```
 
-## Usage 3: Execute Cloudera Director CLI command (local mode)
-You might not need any server function e.g. when you just validate your cluster.conf syntax. Then it's reasonable to execute a client command only.
+## Server commands
+If you already have a Cloudera Altus Director server in anywhere in the world, that's great! You can use that server instance with cloudera-boot. Skip this section and follow the [Client Commands](#client-commands) section.
 
-### One time execution
-You can execute any shell command (including cloudera-director command of course) followed by "cb-exec"
+Otherwise, you'd like to start a fresh Cloudera Altus Director server in your own machine, please follow this section.
+
+### Start server
+As 'cboot -h' indicates, cboot takes 'server' command for server operations. You also use 's' or 'se' as aliases of 'server' (applied for the rest of the document as well). So the following 3 commands are all equivalent and starting server locally.
 ```
-$ cb-exec cloudera-director validate cluster.conf # or any other command here
-Process logs can be found at /opt/cloudera-director-client/logs/application.log
-Plugins will be loaded from /opt/cloudera-director-client/plugins
-Java HotSpot(TM) 64-Bit Server VM warning: ignoring option MaxPermSize=256M; support was removed in 8.0
-Cloudera Director 2.5.0 initializing ...
-Configuration file passes all validation checks.
+$ cboot server start
+$ cboot s start
+$ cboot se start
+```
+When the server is up & running, you can access Cloudera Altus Director web console via http://localhost:7189 as usual on your own machine.
+
+### Check server status
+```
+$ cboot server status
+200
+```
+If you get other than "200" (as server HTTP status code), something is wrong with the server. Please check the server log as in next section. If you don't get any value at all, that's typically because the server is still on the way of starting. Please wait for a moment (and can check the log as well).
+
+Note that until you get the status "200", any client command against the server will fail.
+
+### View server log
+```
+$ cboot server log
 ```
 
-### Shell mode
-If you'd rather want a REPL shell, type "cb-shell" instead
+### Other commands (stop, restart ...)
+You can check all available server commands with 'cboot server -h'
 ```
-$ cb-shell
-[root@xxxxxxxxxxxx cloudera-boot]# cloudera-director validate cluster.conf
+$ cboot server -h
+usage: cboot server [-h] {start,stop,restart,status,log} ...
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+actions:
+  {start,stop,restart,status,log}
+    start               start cloudera director server
+    stop                stop cloudera director server
+    restart             restart cloudera director server
+    status              check server status
+    log                 view server log
 ```
 
-## Usage 4: Execute Cloudera Director CLI command (remote mode)
-If you have a remote Cloudera Director server already, you can connect it by specifying
-- REMOTE_USER: user name to connect Cloudera Director server via ssh - e.g. ec2-user. This should be the owner of ${SSH_PRIVATE_KEY}
-- REMOTE_HOST: Cloudera Director server hostname or IP address
+## Client commands
 
-as command arguments for "cb-shell-remote" (shell mode)
+### Bootstrap a cluster
+Bootstrap a cluster from a Cloudera Altus Director configuration. Options are exactly same as Cloudera's official "cloudera-director bootstrap-remote" command.
 ```
-$ cb-shell-remote <REMOTE_USER> <REMOTE_HOST>
-[root@xxxxxxxxxxxx cloudera-boot]# cd-bootstrap-remote
-[root@xxxxxxxxxxxx cloudera-boot]# cd-terminate-remote
+$ cboot client bootstrap cluster.conf
+$ cboot c bootstrap cluster.conf  # c is an alias for "client"
+$ cboot cl bootstrap cluster.conf # cl is an alias for "client"
 ```
-or "cb-exec-remote" (one time execution)
+Without any option other than a conf file, you can bootstrap a cluster by using [the local server above](#server-commands) with username/password = admin/admin. Of course, you can use any server like the following:
 ```
-$ cb-exec-remote <REMOTE_USER> <REMOTE_HOST> cd-bootstrap-remote
+$ cboot client bootstrap cluster.conf --lp.remote.username=admin --lp.remote.password=admin --lp.remote.hostAndPort=<anyserver>:<anyport>
 ```
-(NOTE) cd-bootstrap-remote/cd-terminate-remote are aliases for "cloudera-director bootstrap-remote" and "cloudera-director terminate-remote" commands respectively.
 
-## Appendix
-### How to build your own custom AMI for faster bootstrap
+### Enter a shell mode to run "cloudera-director" interactively
 ```
-$ vi config.json
-{
-    "vpc_id": "vpc-xxxxxxxx",
-    "subnet_id": "subnet-xxxxxxxx",
-    "security_group_id": "sg-xxxxxxxx"
-}
-$ build-ami -p -P -j 1.8 -a "ami-5de0433c hvm ec2-user /dev/sda1" ap-northeast-1 rhel73 "rhel73-c5.12-ga" http://archive.cloudera.com/cdh5/parcels/5.12/ http://archive.cloudera.com/cm5/redhat/7/x86_64/cm/5.12/
+$ cboot client shell
+bash-4.4# cloudera-director validate-remote cluster.conf  # use the local server with username/password = admin/admin
+bash-4.4# cloudera-director bootstrap-remote cluster.conf
+bash-4.4# cloudera-director terminate-remote cluster.conf
+```
+
+### Other commands (validate, terminate ...)
+You can check all available client commands with 'cboot client -h'
+```
+$ cboot client -h
+usage: cboot client [-h] {shell,bootstrap,validate,terminate} ...
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+actions:
+  {shell,bootstrap,validate,terminate}
+    shell               begin an interactive shell
+    bootstrap           bootstrap cluster (= "cloudera-director bootstrap-
+                        remote")
+    validate            validate conf (= "cloudera-director validate-remote")
+    terminate           terminate cluster (= "cloudera-director terminate-
+                        remote")
 ```
 
 [1]: http://www.cloudera.com/documentation/director/latest/topics/director_intro.html
 [2]: http://www.cloudera.com/documentation/director/latest/topics/director_deployment_modify_config_file.html
 [3]: https://www.docker.com/get-docker
+[4]: https://github.com/Homebrew/brew
+[5]: https://github.com/tsuyo/homebrew-tap/tree/master/archive
+[6]: https://github.com/cloudera/director-scripts/blob/master/configs/aws.reference.conf#L49-L50
