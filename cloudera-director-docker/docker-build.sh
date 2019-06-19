@@ -4,7 +4,7 @@ OPTIND=1 # Reset in case getopts has been used previously in the shell.
 
 push=0
 cache_flag=""
-cd_ver_full=6.0.0
+cd_ver_full=6.2.1
 repo="kirasoa/cloudera-director"
 
 while getopts "h?pcv:r:" opt; do

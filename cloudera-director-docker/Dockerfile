@@ -1,8 +1,8 @@
 FROM busybox:latest AS build-env
 
-MAINTAINER Tsuyoshi Miyake <tsuyoshi.miyake@gmail.com>
+MAINTAINER Tsuyoshi Miyake <me@tsuyo.dev>
 
-ARG CD_VER="6.0.0"
+ARG CD_VER="6.2.1"
 ENV CD_VER ${CD_VER}
 
 WORKDIR /app
