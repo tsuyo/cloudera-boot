@@ -4,8 +4,7 @@ class ClouderaBoot < Formula
   url "https://github.com/tsuyo/homebrew-tap/raw/master/archive/${ARTIFACT}"
   sha256 "${SHA256}"
   version "${VERSION}"
-
-  bottle :unneeded
+  license "MIT"
 
   def install
     bin.install "cboot"
