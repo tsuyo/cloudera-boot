@@ -138,5 +138,5 @@ actions:
 [2]: http://www.cloudera.com/documentation/director/latest/topics/director_deployment_modify_config_file.html
 [3]: https://www.docker.com/get-docker
 [4]: https://github.com/Homebrew/brew
-[5]: https://github.com/tsuyo/homebrew-tap/tree/master/archive
+[5]: https://github.com/tsuyo/cloudera-boot/tags
 [6]: https://github.com/cloudera/director-scripts/blob/master/configs/aws.reference.conf#L49-L50
